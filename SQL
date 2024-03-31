@@ -1,0 +1,57 @@
+# 1.Создайте функцию, которая принимает кол-во сек и далее переводит их в кол-во дней, часов, минут, секунд.
+CREATE FUNCTION secondsToDhms(seconds NUMERIC)
+RETURNS TEXT
+AS $$
+DECLARE
+    d NUMERIC;
+    h NUMERIC;
+    m NUMERIC;
+    s NUMERIC;
+    dDisplay TEXT;
+    hDisplay TEXT;
+    mDisplay TEXT;
+    sDisplay TEXT;
+BEGIN
+    seconds := CAST(seconds AS NUMERIC);
+    d := FLOOR(seconds / (3600 * 24));
+    h := FLOOR(MOD(seconds, (3600 * 24)) / 3600);
+    m := FLOOR(MOD(seconds, 3600) / 60);
+    s := FLOOR(MOD(seconds, 60));
+
+    dDisplay := CASE WHEN d > 0 THEN d || CASE WHEN d = 1 THEN ' day, ' ELSE ' days, ' END ELSE '' END;
+    hDisplay := CASE WHEN h > 0 THEN h || CASE WHEN h = 1 THEN ' hour, ' ELSE ' hours, ' END ELSE '' END;
+    mDisplay := CASE WHEN m > 0 THEN m || CASE WHEN m = 1 THEN ' minute, ' ELSE ' minutes, ' END ELSE '' END;
+    sDisplay := CASE WHEN s > 0 THEN s || CASE WHEN s = 1 THEN ' second' ELSE ' seconds' END ELSE '' END;
+
+    RETURN dDisplay || hDisplay || mDisplay || sDisplay;
+END;
+$$ LANGUAGE plpgsql;
+
+# 2.Cоздайте процедуру, которая выведет только числа, делящиеся на 15 или 33 в промежутке от 1 до 1000.
+DECLARE @n INT;
+SET @n = 0;
+
+SELECT 'Enter n: ';
+SET @n = CAST(READLINE() AS INT);
+
+DECLARE @count INT;
+SET @count = 0;
+
+DECLARE @i INT;
+SET @i = 1;
+
+WHILE @i <= @n
+BEGIN
+    IF @i % 15 = 0 AND @i % 33 = 0
+    BEGIN
+        SET @count = @count + 1;
+    END
+
+    SET @i = @i + 1;
+END
+
+SELECT 'Count: ' + CAST(@count AS VARCHAR);
+
+EXEC sp_sleep 5;
+
+SELECT 0 AS Result;
